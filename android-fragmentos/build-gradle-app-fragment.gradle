@@ -1,0 +1,32 @@
+// android/app/build.gradle - bloques a ajustar
+
+android {
+    namespace "uy.rick.desercion"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "uy.rick.desercion"   // NO se puede cambiar despues de publicar
+        minSdkVersion 23
+        targetSdkVersion 35
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("KEYSTORE_PATH") ?: "prensa-citrica.keystore")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS") ?: "prensacitrica"
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false        // el JS va en assets, R8 no lo toca
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}

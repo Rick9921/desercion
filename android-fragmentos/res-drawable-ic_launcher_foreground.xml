@@ -1,0 +1,12 @@
+<!-- android/app/src/main/res/drawable/ic_launcher_foreground.xml
+     Icono: dos flechas cruzando de bando. Vector puro, sin PNG. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#4AA3D8"
+        android:pathData="M30,38 L62,38 L62,28 L80,46 L62,64 L62,54 L30,54 Z" />
+    <path android:fillColor="#D9574E"
+        android:pathData="M78,70 L46,70 L46,80 L28,62 L46,44 L46,54 L78,54 Z" />
+    <path android:fillColor="#DFA83F"
+        android:pathData="M54,20 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+</vector>

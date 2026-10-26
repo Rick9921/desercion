@@ -1,0 +1,6 @@
+<!-- android/app/src/main/res/values/colors.xml -->
+<resources>
+    <color name="ink">#FF0D1316</color>
+    <color name="citrus">#FFF2A516</color>
+    <color name="ic_launcher_background">#FF0D1316</color>
+</resources>

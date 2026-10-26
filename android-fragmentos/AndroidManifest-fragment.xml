@@ -1,0 +1,18 @@
+<!-- android/app/src/main/AndroidManifest.xml
+     Sustituir el bloque <activity> por este. Claves:
+     screenOrientation=portrait -> bloquea VERTICAL (la arena es de calles verticales)
+     Theme.NoActionBar           -> saca la barra de titulo
+     configChanges               -> evita que la WebView se recree y se pierda la partida -->
+<activity
+    android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+    android:name=".MainActivity"
+    android:label="@string/title_activity_main"
+    android:theme="@style/AppTheme.NoActionBarLaunch"
+    android:launchMode="singleTask"
+    android:screenOrientation="portrait"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+</activity>

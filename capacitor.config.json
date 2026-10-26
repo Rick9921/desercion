@@ -1,0 +1,14 @@
+{
+  "appId": "uy.rick.desercion",
+  "appName": "Desercion",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "backgroundColor": "#0d1316",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

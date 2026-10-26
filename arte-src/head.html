@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#120d0b">
+<title>Deserción · Las Salinas</title>
+<style>
+/* MUNDO: LAS SALINAS. Dos casas de comercio pelean por la quebrada de sal.
+   Las tropas son mercenarios a sueldo: el veterano vencido no muere, cambia de patrón.
+   ARQUITECTURA: DES (motor, cero DOM, intacto) + ART (todo lo visual, nuevo). */
+:root{
+  --ink:#120d0b; --wood:#2a1d16; --wood2:#3a2a1f; --line:#5a4232; --bone:#f3ead8; --dim:#b39d84;
+  --me:#23b39b; --me-lt:#8ff0d8; --me-dk:#0b4f45;
+  --foe:#d6406a; --foe-lt:#ffa3bd; --foe-dk:#6a1431;
+  --salt:#f4eee2; --salt2:#d9cdb8; --gold:#e8b54a; --gold-dk:#8a6420;
+  --fd:Georgia,"Times New Roman",serif; --fu:"Roboto Condensed","Arial Narrow",Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{background:var(--ink);color:var(--bone);font-family:var(--fu);-webkit-font-smoothing:antialiased;user-select:none;touch-action:manipulation}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+  background:radial-gradient(120% 60% at 50% 0%,#2b1d15 0%,#120d0b 70%)}
+
+/* cabecera: libro de cuentas */
+.hdr{display:flex;align-items:center;gap:8px;padding:6px 10px 5px;
+  background:linear-gradient(180deg,#3b2a1e,#24180f);border-bottom:2px solid #6b4c34;box-shadow:0 2px 0 #0008}
+.hdr .nm{font-family:var(--fd);font-style:italic;font-weight:700;font-size:15px;color:var(--gold);text-shadow:0 1px 0 #000}
+.hdr .nm small{display:block;font-style:normal;font-family:var(--fu);font-size:8.5px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.cr{display:flex;gap:6px;margin-left:auto;align-items:center}
+.coin{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
+  font-family:var(--fd);font-weight:700;font-size:13px;color:#1b130c;border:2px solid #0006;box-shadow:inset 0 -3px 0 #0003,inset 0 2px 0 #fff6}
+.coin.m{background:radial-gradient(circle at 35% 30%,var(--me-lt),var(--me) 60%,var(--me-dk))}
+.coin.f{background:radial-gradient(circle at 35% 30%,var(--foe-lt),var(--foe) 60%,var(--foe-dk))}
+.cr i{color:var(--dim);font-style:normal;font-size:11px}
+.x2{font-family:var(--fd);font-weight:700;font-size:11px;background:linear-gradient(180deg,#fff2c4,var(--gold));color:#2a1b08;
+  padding:2px 6px;border-radius:3px;box-shadow:0 0 10px #e8b54a88}
+.x2[hidden]{display:none}
+.clk{font-family:var(--fd);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;margin-left:4px;min-width:2.6em;text-align:right}
+.clk.late{color:#ff8b6b;animation:beat 1s infinite}
+@keyframes beat{0%{transform:scale(1)}12%{transform:scale(1.18)}30%{transform:scale(1)}}
+.pulse{animation:hp .9s ease-out}
+@keyframes hp{0%{filter:brightness(2.2) saturate(1.6)}100%{filter:none}}
+
+.meters{display:flex;align-items:center;gap:7px;padding:4px 10px;background:#1c130e;border-bottom:1px solid #3a2a1f;
+  font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+.mbar{flex:1;height:6px;background:#0d0907;border:1px solid #4a3627;border-radius:3px;position:relative;overflow:hidden}
+.mbar i{position:absolute;top:0;bottom:0;left:50%;width:50%;background:var(--me);transform-origin:left}
+.mbar i.neg{background:var(--foe);transform-origin:right;left:auto;right:50%}
+.mbar:after{content:"";position:absolute;left:50%;top:-1px;bottom:-1px;width:1px;background:#e8b54a99}
+.meters b{font-variant-numeric:tabular-nums;color:var(--bone);font-size:11px;min-width:2.8em;text-align:right}
+
+.fieldwrap{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;background:#0a0706;overflow:hidden}
+#field{display:block;touch-action:none}
+.toast{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;
+  background:linear-gradient(180deg,#f3e7cfee,#dccaa8ee);color:#3a2a1c;border:2px solid #7a5838;border-radius:4px;
+  box-shadow:0 6px 24px #000a;padding:9px 14px;font-size:12.5px;max-width:82%;line-height:1.35}
+.toast b{color:#1d130b;font-family:var(--fd);font-size:14px} .toast[hidden]{display:none}
+.banner{position:absolute;left:0;right:0;top:32%;text-align:center;pointer-events:none;opacity:0;
+  font-family:var(--fd);font-weight:700;font-style:italic;font-size:clamp(22px,7.4vw,36px);letter-spacing:.02em;
+  -webkit-text-stroke:1.5px #1a0f0a;text-shadow:0 4px 0 #1a0f0a,0 0 30px rgba(0,0,0,.9)}
+.banner small{display:block;font-style:normal;font-family:var(--fu);font-size:11px;letter-spacing:.3em;-webkit-text-stroke:0;color:var(--bone);opacity:.85}
+.banner.show{animation:bn 1.7s cubic-bezier(.2,.9,.3,1)}
+@keyframes bn{0%{opacity:0;transform:scale(.4) rotate(-4deg)}16%{opacity:1;transform:scale(1.12) rotate(1deg)}
+  28%{transform:scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:translateY(-14px) scale(1)}}
+
+.foerow{display:flex;align-items:center;gap:5px;padding:4px 8px;background:#1c130e;border-top:1px solid #3a2a1f;
+  font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.foerow>span{flex:none}
+.foerow .cards{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;min-width:0}
+.fc{display:flex;align-items:center;gap:3px;border:1px solid var(--foe-dk);border-radius:3px;padding:2px 5px;font-size:9.5px;
+  letter-spacing:.03em;color:var(--bone);background:#3a101e88;white-space:nowrap;text-transform:none}
+.fc em{font-style:normal;font-family:var(--fd);font-weight:700;color:var(--foe-lt);font-size:10px}
+.fc.v{border-color:var(--gold);box-shadow:inset 0 0 0 1px #e8b54a55} .fc.v em{color:var(--gold)}
+.fc.v:after{content:"✦";color:var(--gold);font-size:9px}
+.fc.nx{border-style:dashed;opacity:.65}
+
+.bottom{padding:6px 8px 8px;display:flex;flex-direction:column;gap:6px;
+  background:linear-gradient(180deg,#3a2a1e,#22170f);border-top:2px solid #6b4c34}
+.elixrow{display:flex;align-items:center;gap:7px}
+.elixbar{flex:1;height:16px;display:flex;gap:2px;padding:2px;background:#120c08;border:1px solid #5a4232;border-radius:3px;transition:box-shadow .3s}
+.elixbar i{flex:1;background:#2a1f17;border-radius:2px;position:relative;overflow:hidden}
+.elixbar i.on{background:linear-gradient(180deg,#fffaf0,var(--salt) 45%,var(--salt2));box-shadow:inset 0 -2px 0 #0002}
+.elixbar i.part{background:linear-gradient(90deg,#cfc2aa var(--p),#2a1f17 var(--p))}
+.elixbar.dbl{box-shadow:0 0 12px #e8b54a99}
+.elixbar.dbl i.on{background:linear-gradient(180deg,#fff7d8,#f2cf7a 50%,#c8962f)}
+.elixn{font-family:var(--fd);font-weight:700;font-size:18px;color:var(--salt);font-variant-numeric:tabular-nums;min-width:1.3em;text-align:right;text-shadow:0 1px 0 #000}
+.elixl{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+
+.hand{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.card{position:relative;background:linear-gradient(180deg,#efe2c6,#cdb894);border:2px solid #6b4c34;border-radius:6px;padding:3px 3px 3px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:0;overflow:hidden;transition:transform .09s,box-shadow .09s;box-shadow:0 3px 0 #0008}
+.card.sel{transform:translateY(-6px);box-shadow:0 0 0 2px var(--me-lt),0 8px 16px #000a}
+.card.off{filter:grayscale(.75) brightness(.6)}
+.card.vet{border-color:var(--gold);box-shadow:0 3px 0 #0008,inset 0 0 0 1px #fff3}
+.card canvas{width:clamp(34px,10.5vw,56px);height:clamp(34px,10.5vw,56px)}
+.card .nm2{font-family:var(--fd);font-weight:700;font-size:10px;text-align:center;line-height:1.05;color:#2a1b10}
+.card .cst{position:absolute;left:2px;top:2px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:700;font-size:12px;color:#2a1b10;background:linear-gradient(180deg,#fff,#d9cdb8);
+  clip-path:polygon(50% 0,100% 30%,100% 75%,50% 100%,0 75%,0 30%);z-index:2}
+.card .fill{position:absolute;left:0;right:0;bottom:0;background:#0007;pointer-events:none}
+.card .vtag{position:absolute;right:3px;top:2px;font-size:11px;color:#a8741c;z-index:2}
+
+.nxt{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.nxt canvas{width:24px;height:24px;border-radius:3px}
+.nxt .sp{margin-left:auto;display:flex;gap:5px}
+.sbtn{font-family:var(--fu);font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-radius:3px;
+  padding:4px 9px;border:1px solid #6b4c34;background:#1c130e;color:var(--dim);cursor:pointer}
+.sbtn.on{border-color:var(--gold);color:var(--gold)}
+
+.over{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;background:radial-gradient(circle at 50% 40%,#2b1d15f2,#0a0706f7);text-align:center;padding:18px;animation:ov .6s ease-out}
+@keyframes ov{from{opacity:0}to{opacity:1}}
+.over h2{font-family:var(--fd);font-style:italic;margin:0;font-size:34px;color:var(--gold);text-shadow:0 3px 0 #000}
+.over.lose h2{color:var(--foe-lt)} .over.draw h2{color:var(--dim)}
+.over p{margin:0;font-size:13px;color:var(--dim);max-width:30em;line-height:1.5}
+.over .big{display:flex;gap:10px;align-items:center}
+.over .big .coin{width:46px;height:46px;font-size:24px}
+.over .big i{font-style:normal;color:var(--dim)}
+.btn{font-family:var(--fd);font-weight:700;font-size:14px;padding:10px 22px;border-radius:5px;border:2px solid #6b4c34;
+  background:linear-gradient(180deg,#f6e8c8,#d2b98c);color:#2a1b10;cursor:pointer;box-shadow:0 4px 0 #000a}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #000a}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <span class="nm">Deserción<small>Las Salinas</small></span>
+    <div class="cr"><span class="coin m" id="crM">0</span><i>almacenes</i><span class="coin f" id="crF">0</span></div>
+    <span class="x2" id="x2" hidden>SAL ×2</span><b class="clk" id="clk">3:00</b>
+  </div>
+  <div class="meters">
+    <span>Sal</span><div class="mbar"><i id="advI"></i></div><b id="advN">0.0</b>
+    <span style="margin-left:6px">Desertores</span><b id="desN" style="min-width:2.6em">0–0</b>
+  </div>
+  <div class="fieldwrap" id="fieldwrap">
+    <canvas id="field"></canvas>
+    <div class="banner" id="banner"></div>
+    <div class="toast" id="toast"></div>
+    <div id="overBox"></div>
+  </div>
+  <div class="foerow"><span>Casa Bermeja</span><div class="cards" id="foeCards"></div></div>
+  <div class="bottom">
+    <div class="elixrow"><span class="elixl">Sal</span><div class="elixbar" id="elixbar"></div><div class="elixn" id="elixn">5</div></div>
+    <div class="hand" id="hand"></div>
+    <div class="nxt">
+      <span>Próxima</span><span id="nextWrap"></span>
+      <div class="sp">
+        <button class="sbtn" id="btnHelp" type="button">Cómo</button>
+        <button class="sbtn" id="btnSnd" type="button">Sonido</button>
+        <button class="sbtn" id="btnPause" type="button">Pausa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
